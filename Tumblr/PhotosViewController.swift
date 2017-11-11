@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AlamofireImage
 
 class PhotosViewController: ViewController, UITableViewDataSource, UITableViewDelegate {
 
@@ -14,9 +15,10 @@ class PhotosViewController: ViewController, UITableViewDataSource, UITableViewDe
   var posts: [[String: Any]] = []
 
     override func viewDidLoad() {
-        super.viewDidLoad()
+      super.viewDidLoad()
       tableView.delegate = self
       tableView.dataSource = self
+        
       // Network request snippet
       let url = URL(string: "https://api.tumblr.com/v2/blog/humansofnewyork.tumblr.com/posts/photo?api_key=Q6vHoaVm5L1u2ZAW1fqv3Jw48gFzYVg9P0vH0VHl3GVy6quoGV")!
       let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
@@ -34,6 +36,7 @@ class PhotosViewController: ViewController, UITableViewDataSource, UITableViewDe
           // TODO: Get the posts and store in posts property
           
           // TODO: Reload the table view
+          self.tableView.reloadData()
         }
       }
       task.resume()
@@ -50,6 +53,17 @@ class PhotosViewController: ViewController, UITableViewDataSource, UITableViewDe
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "PhotoCell", for: indexPath) as! PhotoCell
+    let post = posts[indexPath.row]
+    if let photos = post["photos"] as? [[String: Any]] {
+        // photos is NOT nil, we can use it!
+        // Get the photo url
+        let photo = photos[0]
+        let originalSize = photo["original_size"] as! [String: Any]
+        let urlString = originalSize["url"] as! String
+        let url = URL(string: urlString)
+        cell.photoImageView.af_setImage(withURL: url!)
+    }
+    
     return cell
   }
 
