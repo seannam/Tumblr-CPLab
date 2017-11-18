@@ -33,20 +33,17 @@ class PhotosViewController: ViewController, UITableViewDataSource, UITableViewDe
           let responseDictionary = dataDictionary["response"] as! [String: Any]
           // Store the returned array of dictionaries in our posts property
           self.posts = responseDictionary["posts"] as! [[String: Any]]
-          // TODO: Get the posts and store in posts property
-
-          // TODO: Reload the table view
           self.tableView.reloadData()
         }
       }
       task.resume()
-        // Do any additional setup after loading the view.
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return posts.count
   }
@@ -67,14 +64,28 @@ class PhotosViewController: ViewController, UITableViewDataSource, UITableViewDe
     return cell
   }
 
-    /*
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        
+        let vc = segue.destination as! PhotoDetailsViewController
+        let cell = sender as! PhotoCell
+        let indexPath = tableView.indexPath(for: cell)!
+        let post = posts[indexPath.row]
+        if let photos = post["photos"] as? [[String: Any]] {
+            // photos is NOT nil, we can use it!
+            // Get the photo url
+            let photo = photos[0]
+            let originalSize = photo["original_size"] as! [String: Any]
+            let urlString = originalSize["url"] as! String
+            vc.photoURL = urlString
+        }
+        
     }
-    */
+
 
 }
